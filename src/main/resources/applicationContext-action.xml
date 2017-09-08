@@ -1,0 +1,83 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans            http://www.springframework.org/schema/beans/spring-beans.xsd            http://www.springframework.org/schema/context            http://www.springframework.org/schema/context/spring-context.xsd           http://www.springframework.org/schema/aop            http://www.springframework.org/schema/aop/spring-aop.xsd               http://www.springframework.org/schema/tx            http://www.springframework.org/schema/tx/spring-tx.xsd ">
+	<bean id="departmentAction" class="com._520it.wms1.web.action.DepartmentAction"
+		scope="prototype">
+		<property name="service" ref="deptService" />
+	</bean>
+	<bean id="employeeAction" class="com._520it.wms1.web.action.EmployeeAction"
+		scope="prototype">
+		<property name="service" ref="empService" />
+		<property name="deptService" ref="deptService" />
+		<property name="roleService" ref="roleService" />
+	</bean>
+	<bean id="permissionAction" class="com._520it.wms1.web.action.PermissionAction"
+		scope="prototype">
+		<property name="service" ref="permissionService" />
+	</bean>
+	<bean id="roleAction" class="com._520it.wms1.web.action.RoleAction"
+		scope="prototype">
+		<property name="service" ref="roleService" />
+		<property name="perService" ref="permissionService" />
+		<property name="systemMenuService" ref="systemMenuService" />
+	</bean>
+	<bean id="loginAction" class="com._520it.wms1.web.action.LoginAction"
+		scope="prototype">
+		<property name="service" ref="empService" />
+	</bean>
+	<bean id="systemMenuAction" class="com._520it.wms1.web.action.SystemMenuAction"
+		scope="prototype">
+		<property name="service" ref="systemMenuService" />
+	</bean>
+	<bean id="brandAction" class="com._520it.wms1.web.action.BrandAction"
+		scope="prototype">
+		<property name="service" ref="brandService" />
+	</bean>
+	<bean id="supplierAction" class="com._520it.wms1.web.action.SupplierAction"
+		scope="prototype">
+		<property name="service" ref="supplierService" />
+	</bean>
+	<bean id="productAction" class="com._520it.wms1.web.action.ProductAction"
+		scope="prototype">
+		<property name="service" ref="productService" />
+		<property name="brandService" ref="brandService" />
+	</bean>
+	<bean id="orderBillAction" class="com._520it.wms1.web.action.OrderBillAction"
+		scope="prototype">
+		<property name="service" ref="orderBillService" />
+		<property name="supplierService" ref="supplierService" />
+	</bean>
+	<bean id="depotAction" class="com._520it.wms1.web.action.DepotAction"
+		scope="prototype">
+		<property name="service" ref="depotService" />
+	</bean>
+	<bean id="clientAction" class="com._520it.wms1.web.action.ClientAction"
+		scope="prototype">
+		<property name="service" ref="clientService" />
+	</bean>
+	<bean id="stockIncomeBillAction" class="com._520it.wms1.web.action.StockIncomeBillAction"
+		scope="prototype">
+		<property name="service" ref="stockIncomeBillService" />
+		<property name="depotService" ref="depotService" />
+	</bean>
+	<bean id="stockOutcomeBillAction" class="com._520it.wms1.web.action.StockOutcomeBillAction"
+		scope="prototype">
+		<property name="service" ref="stockOutcomeBillService" />
+		<property name="clientService" ref="clientService" />
+		<property name="depotService" ref="depotService" />
+	</bean>
+	<bean id="productStockAction" class="com._520it.wms1.web.action.ProductStockAction"
+		scope="prototype">
+		<property name="service" ref="productStockService" />
+		<property name="brandService" ref="brandService" />
+		<property name="depotService" ref="depotService" />
+	</bean>
+	<bean id="chartAction" class="com._520it.wms1.web.action.ChartAction"
+		scope="prototype">
+		<property name="chartService" ref="chartService" />
+		<property name="supplierService" ref="supplierService" />
+		<property name="brandService" ref="brandService" />
+		<property name="clientService" ref="clientService" />
+	</bean>
+</beans>

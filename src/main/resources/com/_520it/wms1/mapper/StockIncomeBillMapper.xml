@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.wms1.mapper.StockIncomeBillMapper">
+	<resultMap id="base_mapper" type="StockIncomeBill">
+		<id column="id" property="id" />
+		<result column="sn" property="sn" />
+		<result column="vdate" property="vdate" />
+		<result column="status" property="status" />
+		<result column="totalAmount" property="totalAmount" />
+		<result column="totalNumber" property="totalNumber" />
+		<association property="inputUser" javaType="Employee"
+			columnPrefix="iu_">
+			<result property="id" column="id" />
+			<result property="name" column="name" />
+		</association>
+		<association property="auditor" javaType="Employee"
+			columnPrefix="au_">
+			<result property="name" column="name" />
+			<result property="id" column="id" />
+		</association>
+		<association property="depot" javaType="Depot" column="depot_id"
+			select="com._520it.wms1.mapper.DepotMapper.get"></association>
+		<collection property="items" ofType="StockIncomeBillItem"
+			column="id"
+			select="com._520it.wms1.mapper.StockIncomeBillItemMapper.getItemsByStockIncomeBillId"></collection>
+	</resultMap>
+	<delete id="delete">
+		delete from stockIncomeBill where id = #{id}
+	</delete>
+	<insert id="save" useGeneratedKeys="true" keyProperty="id"
+		keyColumn="id">
+		insert into
+		stockIncomeBill
+		(sn,vdate,status,depot_id,inputUser_id,totalAmount,totalNumber,inputTime)
+		values
+		(#{sn},#{vdate},#{status},#{depot.id},#{inputUser.id},#{totalAmount},#{totalNumber},#{inputTime})
+	</insert>
+	<update id="update">
+		update stockIncomeBill
+		set
+		sn=#{sn},
+		vdate=#{vdate},   
+		status=#{status},
+		depot_id=#{depot.id},
+		inputUser_id=#{inputUser.id},
+		inputTime=#{inputTime},
+		totalAmount=#{totalAmount},
+		totalNumber=#{totalNumber}
+		where id = #{id}
+	</update>
+	<select id="get" resultMap="base_mapper">
+		select sbill.*,au.id au_id,au.name
+		au_name,iu.id iu_id,iu.name iu_name
+		from stockIncomeBill sbill
+		left join
+		employee au on au.id=sbill.auditor_id
+		left join employee iu on
+		iu.id=sbill.inputUser_id
+		where
+		sbill.id = #{id}
+	</select>
+	<select id="list" resultMap="base_mapper">
+		select * from stockIncomeBill
+	</select>
+	<sql id="conditions_sql">
+		<where>
+			<if test="beginDate!=null">
+				and vdate &gt;= #{beginDate}
+			</if>
+			<if test="endDate!=null">
+				and vdate &lt;= #{endDate}
+			</if>
+			<if test="status>-1">and status=#{status}</if>
+			<if test="depotId!=null and depotId!=-1">and depot_id=#{depotId}</if>
+		</where>
+	</sql>
+	<select id="getTotalCount" resultType="long">
+		select count(*) from stockIncomeBill
+		<include refid="conditions_sql"></include>
+	</select>
+	<select id="getListData" resultMap="base_mapper">
+		select sbill.*,au.id au_id,au.name au_name,iu.id iu_id,iu.name iu_name
+		from stockIncomeBill sbill
+		left join employee au on
+		au.id=sbill.auditor_id
+		left join employee iu on
+		iu.id=sbill.inputUser_id
+		<include refid="conditions_sql"></include>
+		limit #{beginIndex},#{pageSize}
+	</select>
+	<update id="updateAudit">
+		update stockIncomeBill
+		set
+		status=#{status},
+		auditor_id=#{auditor.id},
+		auditTime=#{auditTime}
+		where id = #{id}
+	</update>
+
+</mapper>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.wms1.mapper.StockIncomeBillItemMapper">
+	<resultMap id="base_mapper" type="StockIncomeBillItem">
+		<id column="id" property="id" />
+		<result column="amount" property="amount" />
+		<result column="billId" property="billId" />
+		<result column="number" property="number" />
+		<result column="costPrice" property="costPrice" />
+		<result column="remark" property="remark" />
+		<association property="product" column="product_id"
+			javaType="Product" select="com._520it.wms1.mapper.ProductMapper.get"></association>
+	</resultMap>
+	<delete id="delete">
+		delete from stockIncomeBillItem where id = #{id}
+	</delete>
+	<insert id="save" useGeneratedKeys="true" keyProperty="id"
+		keyColumn="id">
+		insert into
+		stockIncomeBillItem
+		(amount,product_id,costPrice,remark,bill_id,number)
+		values
+		(#{amount},#{product.id},#{costPrice},#{remark},#{billId},#{number})
+	</insert>
+
+	<update id="update">
+		update stockIncomeBillItem
+		set
+		amount=#{amount},
+		product_id=#{product.id},
+		bill_id=#{billId},
+		number=#{number},
+		costPrice=#{costPrice},
+		remark=#{remark}
+		where id = #{id}
+	</update>
+	<select id="get" resultMap="base_mapper">
+		select *
+		from stockIncomeBillItem sbi
+		where
+		id = #{id}
+	</select>
+	<select id="list" resultMap="base_mapper">
+		select * from stockIncomeBillItem
+	</select>
+	<sql id="conditions_sql">
+		<where>
+		</where>
+	</sql>
+	<select id="getTotalCount" resultType="long">
+		select count(*) from stockIncomeBillItem
+		<include refid="conditions_sql"></include>
+	</select>
+	<select id="getListData" resultMap="base_mapper">
+		select * from stockIncomeBillItem
+		<include refid="conditions_sql"></include>
+		limit #{beginIndex},#{pageSize}
+	</select>
+	<select id="getItemsByStockIncomeBillId" resultMap="base_mapper">
+		select *
+		from
+		stockIncomeBillItem where bill_id =#{billId}
+	</select>
+
+	<select id="deleteItemsByBillId">
+		delete from stockIncomeBillItem where bill_id =
+		#{billId}
+	</select>
+</mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.wms1.mapper.OrderBillItemMapper">
+	<resultMap id="base_mapper" type="OrderBillItem">
+		<id property="id" column="id" />
+		<result property="sn" column="sn" />
+		<result property="vdate" column="vdate" />
+		<result property="status" column="status" />
+		<result property="totalAmount" column="totalAmount" />
+		<result property="totalNumber" column="totalNumber" />
+		<association property="product" column="product_id"
+			javaType="Product" select="com._520it.wms1.mapper.ProductMapper.get"></association>
+	</resultMap>
+	<insert id="save" useGeneratedKeys="true" keyProperty="id"
+		keyColumn="id">
+		insert into
+		orderbillitem
+		(amount,product_id,bill_id,number,costPrice,remark)
+		values
+		(#{amount},#{product.id},#{billId},#{number},#{costPrice},#{remark})
+	</insert>
+
+
+	<select id="selectByBillId" resultMap="base_mapper">
+		select
+		id,amount,product_id,costPrice,remark,bill_id,number from
+		orderbillitem where bill_id =#{id}
+	</select>
+	<delete id="deleteByBillId">
+		delete from
+		orderbillitem where
+		bill_id =#{id}
+	</delete>
+
+</mapper>

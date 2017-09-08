@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--suppress ALL -->
+<mapper namespace="com._520it.wms1.mapper.ProductStockMapper">
+
+	<resultMap type="ProductStock" id="base_map">
+		<id property="id" column="id" />
+		<result property="price" column="price" />
+		<result property="storeNumber" column="storeNumber" />
+		<result property="amount" column="amount" />
+		<association property="product" javaType="Product">
+			<result property="id" column="pid" />
+			<result property="name" column="pname" />
+			<result property="sn" column="psn" />
+			<association property="brand" javaType="Brand">
+				<result property="name" column="bname" />
+				<result property="id" column="bid" />
+			</association>
+		</association>
+		<association property="depot" javaType="com._520it.wms1.domain.Depot">
+			<result property="id" column="did" />
+			<result property="name" column="dname" />
+		</association>
+	</resultMap>
+	<insert id="save">
+		insert into
+		productStock(price,storeNumber,amount,product_id,depot_id)
+		values(#{price},#{storeNumber},#{amount},#{product.id},#{depot.id})
+	</insert>
+	<update id="update">
+		update productStock
+		set price=#{price},
+		storeNumber=#{storeNumber},
+		amount=#{amount}
+		where id = #{id}
+	</update>
+	<select id="selectStockByProductIdAndDepotId" resultMap="base_map">
+		select
+		ps.id,ps.amount,
+		ps.storeNumber,ps.price,
+		p.id pid ,p.name pname,
+		d.id
+		did ,d.name dname
+		from productStock ps
+		join product p on ps.product_id =
+		p.id
+		join depot d on ps.depot_id = d.id
+		where ps.product_id =
+		#{productId}
+		and ps.depot_id =#{depotId}
+	</select>
+	<sql id="conditions">
+		<where>
+			<if test="keyword!=null and keyword!=''"> and (p.name like concat('%',#{keyword},'%')
+				or p.sn like
+				concat('%',#{keyword},'%')) </if>
+			<if test="depotId !=null and depotId>-1"> and ps.depot_id = #{depotId } </if>
+			<if test="brandId !=null and brandId>-1"> and b.id = #{brandId } </if>
+			<if test="limitNumber !=null">
+				and ps.storeNumber &lt;= #{limitNumber}
+			</if>
+		</where>
+	</sql>
+	<select id="getTotalCount" resultType="Long">
+		select count(*)
+		from productStock ps
+		join product p on
+		ps.product_id =
+		p.id
+		join depot d on ps.depot_id = d.id
+		join brand b on b.id =
+		p.brand_id
+		<include refid="conditions"></include>
+	</select>
+	<select id="getListData" resultMap="base_map">
+		select
+		ps.id,ps.amount,
+		ps.storeNumber,ps.price,
+		p.id pid ,p.name
+		pname,p.sn psn,
+		d.id did ,d.name dname,b.id bid,b.name bname
+		from
+		productStock ps
+		left join product p on ps.product_id =p.id
+		left join
+		depot d on ps.depot_id = d.id
+		left join brand b on b.id =
+		p.brand_id
+		<include refid="conditions"></include>
+		limit #{beginIndex},#{pageSize}
+	</select>
+</mapper>
